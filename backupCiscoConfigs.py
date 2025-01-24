@@ -60,8 +60,7 @@ def backup_config(device):
                 f.write(output)
                 f.write("\n\n")
         
-        print(f"Backup successfully done for: {hostname}")
-        send_email(f"Backup of {hostname} completed", f"The backup of the device {hostname} was successful.")
+        results.append(f"Backup successfully done for: {hostname}")
     
     except Exception as e:
         print(f"Error connecting to device {device['ip']}: {str(e)}")
@@ -71,20 +70,31 @@ def backup_config(device):
         if 'net_connect' in locals():
             net_connect.disconnect()
 
-# Common settings for all devices
+    return results
+
+# common settings for all devices
 common_config = {
     'device_type': 'cisco_ios',
-    'username': 'admin',  # User for whom the public key was configured on the device
+    'username': 'admin',  # user for whom the public key was configured on the device
 }
 
-# List of device IPs
+# list of device IPs
 ips = ['192.168.1.1', 
        '192.168.1.2'
       ] # Add more IPs as needed
 
-# Creates a list of devices
+# creates a list of devices
 devices = [{**common_config, 'ip': ip} for ip in ips]
 
-# Perform backup for each devices
+# store all results
+all_results = []
+
+# perform backup for each devices
 for device in devices:
-    backup_config(device)
+    all_results.extend(backup_config(device))
+
+# email body
+body = "\n".join(all_results)
+
+# send backup report
+send_email("Cisco Backup Report", body)
