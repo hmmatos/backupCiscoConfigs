@@ -31,6 +31,7 @@ def send_email(subject, body):
         print(f"Error sending email: {e}")
 
 def backup_config(device):
+    results = []
     try:
         # Settings for public key authentication
         net_connect = ConnectHandler(
@@ -63,8 +64,7 @@ def backup_config(device):
         results.append(f"Backup successfully done for: {hostname}")
     
     except Exception as e:
-        print(f"Error connecting to device {device['ip']}: {str(e)}")
-        send_email(f"Backup of {device['ip']} failed", f"Error backing up device {device['ip']}: {str(e)}")
+        results.append(f"Error connecting to device {device['ip']}: {str(e)}")
     
     finally:
         if 'net_connect' in locals():
